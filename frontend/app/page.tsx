@@ -1,9 +1,28 @@
 "use client";
 
-
-
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [backendStatus, setBackendStatus] = useState<string>("Checking...");
+
+  useEffect(() => {
+    async function checkBackend() {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/ping");
+        if (!res.ok) {
+          throw new Error("Not ok");
+        }
+        const data = await res.json();
+        setBackendStatus(`✅ ${data.message}`);
+      } catch (err) {
+        console.error(err);
+        setBackendStatus("❌ Cannot reach backend");
+      }
+    }
+
+    checkBackend();
+  }, []);
+
   return (
     <main
       style={{
@@ -59,6 +78,10 @@ export default function Home() {
             Join Waitlist
           </button>
         </form>
+
+        <div style={{ marginTop: 32, fontSize: "0.9rem", opacity: 0.9 }}>
+          <p>Backend status: {backendStatus}</p>
+        </div>
       </div>
     </main>
   );
